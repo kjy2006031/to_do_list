@@ -1,0 +1,122 @@
+<!doctype html>
+{% load static %}
+<html lang="ko">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>Bootstrap demo</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Input 요소 스타일링 */
+    .input-style {
+        width: 50px; /* 너비 조정 */
+        height: 25px; /* 높이 조정 */
+        border: 1px solid #ccc; /* 테두리 설정 */
+        border-radius: 15px; /* 테두리 모서리 둥글게 */
+        padding: 5px; /* 내부 여백 설정 */
+        font-size: 14px; /* 글꼴 크기 설정 */
+        outline: none; /* 포커스 시 테두리 제거 */
+    }
+
+    </style>
+</head>
+<body class="list_body">
+<dib>
+    <dib class="bg"></dib>
+
+    <h1 class="display-1 title">To Do List</h1>
+    <h2 class="display-1 title" onclick="location.href='{% url 'list_create' %}'" style="background-color: rgba(0, 0, 0, 0.5);">Add Work</h2>
+    <div id="board-list">
+        <div class="container">
+            <table class="board-table">
+                <thead>
+                <tr>
+                    <th scope="col" class="th-num">번호</th>
+                    <th scope="col" class="th-category">카테고리</th>
+                    <th scope="col" class="th-title">제목</th>
+                    <th scope="col" class="th-up">등록일</th>
+                    <th scope="col" class="th-delete">삭제</th>
+                    <th scope="col" class="th-success">성공도</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for list in obj_list %}
+                <tr>
+                    <td>{{ list.id }}</td>
+                    <td>{{ list.category }}</td>
+                    <td>{{ list.title }}</td>
+                    <td>{{ list.date_create }}</td>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <button type="submit" name="delete" value="delete" formaction="{% url 'list_delete' list_id=list.id %}" class="custom-btn btn-5"><span>삭제</span></button>
+                        </td>
+                    </form>
+                    <td>
+                    <main>
+                    <form method="POST" id="update_form_{{ list.id }}" action="{% url 'list_config' list.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ list.id }}">
+                        <input type="hidden" name="success" value="{{ list.success }}">
+                        <div class="circle" id="circle_{{ list.id }}" style="background: conic-gradient(lime {{ list.success }}%, white 0deg);">
+                            <div class="inner-circle" onclick="editSuccess('{{ list.id }}')">
+                                <span class="circle_num" id="circle_num_{{ list.id }}">{{ list.success }}%</span>
+                            </div>
+                        </div>
+                    </form>
+                    </main>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</dib>
+</body>
+<script>
+function editSuccess(id) {
+    var spanElement = document.getElementById("circle_num_" + id);
+    if (spanElement) {
+        // span 요소를 input 태그로 변경
+        var inputElement = document.createElement("input");
+        inputElement.setAttribute("type", "text");
+        inputElement.setAttribute("id", "input_circle_num_" + id);
+        inputElement.value = spanElement.innerText.replace('%', '');  // 퍼센티지 기호 제거
+        inputElement.classList.add("input-style"); // 클래스 추가
+
+        // span 요소를 input 태그로 대체
+        spanElement.parentNode.replaceChild(inputElement, spanElement);
+
+        // input 태그에 포커스 설정
+        inputElement.focus();
+
+        // input 태그에서 값이 변경될 때 그래프 업데이트
+        inputElement.addEventListener("input", function(event) {
+            var newSuccess = parseInt(inputElement.value);
+            console.log("Updated Success Value (during input):", newSuccess);  // 입력된 값 출력
+            var circleElement = document.getElementById("circle_" + id);
+            if (circleElement) {
+                circleElement.style.background = "conic-gradient(lime " + newSuccess + "%, white 0deg)";
+            } else {
+                console.error("circle 요소를 찾을 수 없습니다.");
+            }
+        });
+
+        // input 태그에서 포커스가 떠날 때 폼 제출
+        inputElement.addEventListener("blur", function(event) {
+            event.preventDefault();  // 이벤트의 기본 동작을 막음
+            var form = document.getElementById("update_form_" + id);
+            var updatedValue = inputElement.value.replace('%', '');  // 퍼센티지 기호 제거한 값 추가
+            console.log("Final Updated Success Value to be submitted:", updatedValue);  // 최종 제출 값 출력
+            form.querySelector("[name='success']").value = updatedValue;
+            form.submit();
+        });
+    } else {
+        console.error("span 요소를 찾을 수 없습니다.");
+    }
+}
+</script>
+</html>

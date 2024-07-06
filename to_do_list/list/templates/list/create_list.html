@@ -1,0 +1,81 @@
+<!doctype html>
+{% load static %}
+<html lang="ko">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>Bootstrap demo</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Select 요소 스타일링 */
+        .board-table select {
+            width: 10%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background-color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            appearance: none; /* 기본 스타일 제거 */
+        }
+
+        .board-table select:focus {
+            outline: none; /* 포커스 시 외곽선 제거 */
+        }
+
+        /* 화살표 아이콘 스타일 */
+        .board-table select::after {
+            content: '\25BC'; /* 화살표 아이콘 */
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none; /* 클릭 이벤트 비활성화 */
+        }
+
+        /* Input 요소 스타일링 */
+        .board-table input[type="text"] {
+            width: 50%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .board-table input[type="text"]:focus {
+            outline: none; /* 포커스 시 외곽선 제거 */
+            border-color: #007bff; /* 포커스 시 테두리 색상 변경 */
+        }
+    </style>
+</head>
+<body class="create_body">
+<h1 class="display-1 title">Add Your To Do List</h1>\
+<form method="post">
+    {% csrf_token %}
+    <table class="board-table">
+        <tr>
+            <td>카테고리</td>
+            <td>
+                <select name="category">
+                    <option value="학교">학교</option>
+                    <option value="회사">회사</option>
+                    <option value="가족">가족</option>
+                    <option value="친구">친구</option>
+                    <option value="일과">일과</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>제목</td>
+            <td>
+                <input type="text" name="title">
+            </td>
+        </tr>
+    </table>
+   <button class="custom-btn btn-8"><span>추가하기</span></button>
+</form>
+
+</body>
+</html>
